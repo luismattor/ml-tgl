@@ -1,3 +1,4 @@
+from collections import defaultdict
 from glob import glob
 from os import listdir
 from os.path import isfile
@@ -11,13 +12,11 @@ from context import Context
 
 import fileinput
 import logging
-import numpy
+import numpy as np
 import os
 import sys
 
-# TODO Expand dataset, split audio files in X seconds?
-# TODO Transform labels to a int[] vector
-# TODO Try multiclass logistic regression (http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html)
+
 class FeatureProcessing:
 
     target_sep = " "
@@ -34,6 +33,14 @@ class FeatureProcessing:
     def __init__(self, context):
         self.context = context
         self.logger = logging.getLogger('root')
+        self.lang_enc, _ = self.get_lang_maps()
+        self.logger.info("lang encoder = %s" % self.lang_enc)
+
+    def get_lang_maps(self):
+        conf = self.context.conf
+        decode = list(enumerate(os.listdir(conf.raw_dir)))
+        encode = [(l,i) for (i,l) in decode]
+        return dict(encode), dict(decode)
 
     def computeFeatures(self):
         conf = self.context.conf
@@ -49,10 +56,14 @@ class FeatureProcessing:
 
         [train_keys,cross_keys,test_keys] = self.split_dataset(audio_tuples)
         
-        self.logger.info('computing trainging features')
-        train_mfccs = self.compute_mfccs(audio_tuples, train_keys, conf.train_dir)
+        self.logger.info('computing training features')
+        train_data = self.compute_mfccs(audio_tuples, train_keys, conf.train_dir)
+        self.logger.info('computing cross-val features')
+        cross_data = self.compute_mfccs(audio_tuples, cross_keys, conf.train_dir)
+        self.logger.info('computing test features')
+        test_data = self.compute_mfccs(audio_tuples, test_keys, conf.train_dir)
 
-        return train_mfccs
+        return train_data, cross_data, test_data
         
         #self.logger.info('computing cross validation features')
         #self.compute_mfccs(cross_keys, conf.cross_dir)
@@ -67,43 +78,62 @@ class FeatureProcessing:
         fo.writelines(lines)
         fo.close()
 
-    # TODO
-    # - Ensure training set has samples from all languages
-    # - apply dataset split in a language level-basis
     def split_dataset(self, audio_tuples):
         conf = self.context.conf
-        keys = range(len(audio_tuples))
         seed(301214)
-        shuffle(keys)
-        n = len(keys)
-        n_train = int(round(n*(conf.train_size/100.0)))
-        n_cross = int(round(n*(conf.cross_size/100.0)))
-        n_test = n - (n_train + n_cross)
-
-        self.logger.info("number of training samples: " + str(n_train))
-        self.logger.info("number of cross validation samples: " + str(n_cross))
-        self.logger.info("number of testing samples: " + str(n_test))
-        return (keys[:n_train],
-                keys[n_train:(n_train + n_cross)],
-                keys[(n_train + n_cross):])
+        audio_map = defaultdict(lambda: [])
+        i = 0
+        for (lan, file) in audio_tuples:
+            audio_map[lan].append(i)
+            i += 1
+        train_keys, cross_keys, test_keys = [], [], []
+        for lan, idxs in audio_map.iteritems():
+            keys = list(idxs)
+            shuffle(keys)
+            n = len(keys)
+            n_train = int(round(n*(conf.train_size/100.0)))
+            n_cross = int(round(n*(conf.cross_size/100.0)))
+            n_test = n - (n_train + n_cross)
+            self.logger.info(lan + ": number of training samples: " + str(n_train))
+            self.logger.info(lan + ": number of cross validation samples: " + str(n_cross))
+            self.logger.info(lan + ": number of testing samples: " + str(n_test))
+            train_keys += keys[:n_train]
+            cross_keys += keys[n_train:(n_train + n_cross)]
+            test_keys += keys[(n_train + n_cross):]
+        return (train_keys, cross_keys, test_keys)
 
     def compute_mfccs(self, audio_tuples, keys, path):
         conf = self.context.conf
         bar = ProgressBar()
 
-        mfccs = []
+        X, Y, files = [], [], []
+        n_cols = conf.mfcc_x_vec * conf.num_cep
+        lang_cnt = defaultdict(lambda: 0)
         for key in bar(keys):
             # compute mfccs
-            print key, audio_tuples[key][1]
-            rate,signal = read(audio_tuples[key][1])
-            signal = numpy.cast[float](signal)
-            print rate, signal.shape, signal
+            #print key, audio_tuples[key][1]
+            audio_file = audio_tuples[key][1]
+            rate,signal = read(audio_file)
+            signal = np.cast[float](signal)
+            #print rate, signal.shape, signal
             mfcc = self.computeMFCC(signal, rate)
-            mfcc = ((mfcc-numpy.mean(mfcc))/numpy.std(mfcc)).flatten()
-            print mfcc.shape, mfcc
-            mfccs.append((audio_tuples[key][0], mfcc))
-        
-        return mfccs
+            mfcc = ((mfcc-np.mean(mfcc))/np.std(mfcc))
+            #print mfcc.shape, mfcc
+            n_rows = mfcc.size / n_cols
+            mfcc = mfcc.flatten()[:n_rows * n_cols]
+            X += list(mfcc.reshape(n_rows, n_cols))
+            lang = audio_tuples[key][0]
+            y = self.lang_enc[lang]
+            for _ in xrange(n_rows):
+                Y.append(y)
+                files.append(audio_file)
+                lang_cnt[lang] += 1
+        X = np.array(X)
+        Y = np.array(Y)
+        self.logger.info("X shape = %s, Y shape = %s, files len = %d" % \
+                         (X.shape, Y.shape, len(files)))
+        self.logger.info("lang cnt = %s" % (lang_cnt))
+        return X, Y, files
         
     def computeMFCC(self, signal, rate):
         conf = self.context.conf
@@ -123,7 +153,7 @@ if __name__ == "__main__":
     context = Context()
     fp = FeatureProcessing(context)
     features = fp.computeFeatures()
-    print features
-    print type(features)
+#    print features
+#    print type(features)
 
 

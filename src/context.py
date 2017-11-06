@@ -89,10 +89,13 @@ class Conf:
         self.test_size = float(config.get("dataset", "test"))
         # TODO: Assert sizes sum to one
         self.id_prefix = config.get("dataset", "id_prefix").strip()
+        self.mfcc_x_vec = int(config.get("dataset", "mfcc_x_vec").strip())
 
         # Dataset folders
         self.dataset_dir = join(self.home, config.get("app","dataset_dir"))
         self.raw_dir = join(self.dataset_dir, config.get("app","raw_dir"))
+        self.split_by_silence_dir = \
+            join(self.dataset_dir, config.get("app", "split_by_silence_dir"))
         self.train_dir = join(self.dataset_dir, config.get("app","train_dir"))
         self.cross_dir = join(self.dataset_dir, config.get("app","cross_dir"))
         self.test_dir = join(self.dataset_dir, config.get("app","test_dir"))
