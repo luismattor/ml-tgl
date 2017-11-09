@@ -90,6 +90,8 @@ class Conf:
         # TODO: Assert sizes sum to one
         self.id_prefix = config.get("dataset", "id_prefix").strip()
         self.mfcc_x_vec = int(config.get("dataset", "mfcc_x_vec").strip())
+        self.langs = config.get("dataset", "langs").strip()
+        self.langs = set(self.langs.split(','))
 
         # Dataset folders
         self.dataset_dir = join(self.home, config.get("app","dataset_dir"))

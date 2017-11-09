@@ -1,20 +1,18 @@
+import logging
+import os
 from collections import defaultdict
-from glob import glob
 from os import listdir
-from os.path import isfile
+from os.path import isdir
 from os.path import join
+from random import seed
+from random import shuffle
+
+import numpy as np
 from progressbar import ProgressBar
 from python_speech_features import mfcc
-from random import shuffle
-from random import seed
 from scipy.io.wavfile import read
-from context import Context
 
-import fileinput
-import logging
-import numpy as np
-import os
-import sys
+from context import Context
 
 
 class FeatureProcessing:
@@ -48,7 +46,8 @@ class FeatureProcessing:
         # Creating tuples (label, wav_file)
         self.logger.info('creating wav index tuples')
         path = conf.raw_dir
-        audio_dirs = [x for x in listdir(path) if not isfile(join(path,x))]
+        chose_lang = lambda x: isdir(join(path,x)) and x in conf.langs
+        audio_dirs = [x for x in listdir(path) if chose_lang(x)]
         audio_tuples = [ (x,join(path,x,y)) for x in audio_dirs for y in listdir(join(path, x)) ]
         self.logger.info("number of examples: " + str(len(audio_tuples)))
         for x in audio_tuples:
@@ -103,9 +102,10 @@ class FeatureProcessing:
         return (train_keys, cross_keys, test_keys)
 
     def compute_mfccs(self, audio_tuples, keys, path):
+        if not keys:
+            return None, None, []
         conf = self.context.conf
         bar = ProgressBar()
-
         X, Y, files = [], [], []
         n_cols = conf.mfcc_x_vec * conf.num_cep
         lang_cnt = defaultdict(lambda: 0)
