@@ -129,7 +129,8 @@ class FeatureProcessing:
         Y = np.array(Y)
         self.logger.info("X shape = %s, Y shape = %s, files len = %d" % \
                          (X.shape, Y.shape, len(files)))
-        self.logger.info("lang cnt = %s" % (lang_cnt))
+        self.logger.info("lang cnt = %s, # diff files = %d" % \
+                         (lang_cnt, len(set(files))))
         return X, Y, files
         
     def computeMFCC(self, signal, rate):

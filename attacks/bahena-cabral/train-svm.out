@@ -1,0 +1,53 @@
+C:\Users\dbahena\Anaconda2\python.exe C:/Users/dbahena/PycharmProjects/ml-tgl/src/train-svm.py
+2017-11-10 08:03:58,161 - root - INFO - Project home: C:\Users\dbahena\PycharmProjects\ml-tgl
+2017-11-10 08:03:58,161 - root - INFO - MFCC parameters
+2017-11-10 08:03:58,161 - root - INFO - *win_len: 0.025
+2017-11-10 08:03:58,161 - root - INFO - *win_step: 0.01
+2017-11-10 08:03:58,161 - root - INFO - *num_cep: 13
+2017-11-10 08:03:58,161 - root - INFO - *n_filt: 26
+2017-11-10 08:03:58,161 - root - INFO - *n_fft: 512
+2017-11-10 08:03:58,161 - root - INFO - *low_freq: 0
+2017-11-10 08:03:58,161 - root - INFO - *high_freq: 4000
+2017-11-10 08:03:58,163 - root - INFO - *pre_emph: 0.97
+2017-11-10 08:03:58,163 - root - INFO - *cep_lifter: 22
+2017-11-10 08:03:58,163 - root - INFO - *append_energy: False
+2017-11-10 08:03:58,163 - root - INFO - Dataset parameters
+2017-11-10 08:03:58,163 - root - INFO - *dataset_dir: C:\Users\dbahena\PycharmProjects\ml-tgl\dataset
+2017-11-10 08:03:58,164 - root - INFO - *raw_dir: C:\Users\dbahena\PycharmProjects\ml-tgl\dataset\wav/verne
+2017-11-10 08:03:58,164 - root - INFO - *train_dir: C:\Users\dbahena\PycharmProjects\ml-tgl\dataset\train
+2017-11-10 08:03:58,164 - root - INFO - *cross_dir: C:\Users\dbahena\PycharmProjects\ml-tgl\dataset\cross
+2017-11-10 08:03:58,164 - root - INFO - *test_dir: C:\Users\dbahena\PycharmProjects\ml-tgl\dataset\test
+2017-11-10 08:03:58,164 - root - INFO - *train_size: 10.0
+2017-11-10 08:03:58,164 - root - INFO - *cross_size: 0.0
+2017-11-10 08:03:58,164 - root - INFO - *test_size: 10.0
+2017-11-10 08:03:58,164 - root - INFO - *id_prefix: id_
+2017-11-10 08:03:58,164 - root - INFO - *batch_size: 1
+2017-11-10 08:03:58,164 - root - INFO - Session and summary parameters
+2017-11-10 08:03:58,164 - root - INFO - Model parameters
+2017-11-10 08:03:58,164 - root - INFO - lang encoder = {u'fra': 2, u'deu': 0, u'eng': 1}
+2017-11-10 08:03:58,165 - root - INFO - creating wav index tuples
+2017-11-10 08:03:58,206 - root - INFO - number of examples: 5444
+2017-11-10 08:03:58,209 - root - INFO - fra: number of training samples: 278
+2017-11-10 08:03:58,209 - root - INFO - fra: number of cross validation samples: 0
+2017-11-10 08:03:58,209 - root - INFO - fra: number of testing samples: 278
+2017-11-10 08:03:58,210 - root - INFO - deu: number of training samples: 267
+2017-11-10 08:03:58,210 - root - INFO - deu: number of cross validation samples: 0
+2017-11-10 08:03:58,210 - root - INFO - deu: number of testing samples: 267
+2017-11-10 08:03:58,210 - root - INFO - computing training features
+100% |########################################################################|
+2017-11-10 08:04:32,456 - root - INFO - X shape = (14340L, 975L), Y shape = (14340L,), files len = 14340
+2017-11-10 08:04:32,456 - root - INFO - lang cnt = defaultdict(<function <lambda> at 0x000000000581E6D8>, {u'fra': 7286, u'deu': 7054})
+2017-11-10 08:04:32,456 - root - INFO - computing cross-val features
+2017-11-10 08:04:32,457 - root - INFO - computing test features
+100% |########################################################################|
+2017-11-10 08:05:06,898 - root - INFO - X shape = (14310L, 975L), Y shape = (14310L,), files len = 14310
+2017-11-10 08:05:06,898 - root - INFO - lang cnt = defaultdict(<function <lambda> at 0x000000000571E278>, {u'fra': 7349, u'deu': 6961})
+2017-11-10 08:05:06,900 - root - INFO - Training model for X with shape (14340L, 975L)
+2017-11-10 08:08:05,891 - root - INFO - Testing model for X with shape (14340L, 975L)
+2017-11-10 08:10:41,605 - root - INFO - Computing error rate
+2017-11-10 08:10:41,612 - root - INFO - error rate = 11/545 = 0.020183
+2017-11-10 08:10:41,612 - root - INFO - Testing model for X with shape (14310L, 975L)
+2017-11-10 08:13:14,688 - root - INFO - Computing error rate
+2017-11-10 08:13:14,697 - root - INFO - error rate = 26/545 = 0.047706
+
+Process finished with exit code 0
