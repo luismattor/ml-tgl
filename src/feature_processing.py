@@ -50,9 +50,6 @@ class FeatureProcessing:
         audio_dirs = [x for x in listdir(path) if chose_lang(x)]
         audio_tuples = [ (x,join(path,x,y)) for x in audio_dirs for y in listdir(join(path, x)) ]
         self.logger.info("number of examples: " + str(len(audio_tuples)))
-        for x in audio_tuples:
-            print x
-
         [train_keys,cross_keys,test_keys] = self.split_dataset(audio_tuples)
         
         self.logger.info('computing training features')
@@ -79,7 +76,7 @@ class FeatureProcessing:
 
     def split_dataset(self, audio_tuples):
         conf = self.context.conf
-        seed(301214)
+        seed(conf.rand_seed)
         audio_map = defaultdict(lambda: [])
         i = 0
         for (lan, file) in audio_tuples:
@@ -92,13 +89,13 @@ class FeatureProcessing:
             n = len(keys)
             n_train = int(round(n*(conf.train_size/100.0)))
             n_cross = int(round(n*(conf.cross_size/100.0)))
-            n_test = n - (n_train + n_cross)
+            n_test = int(round(n*(conf.test_size/100.0)))
             self.logger.info(lan + ": number of training samples: " + str(n_train))
             self.logger.info(lan + ": number of cross validation samples: " + str(n_cross))
             self.logger.info(lan + ": number of testing samples: " + str(n_test))
             train_keys += keys[:n_train]
             cross_keys += keys[n_train:(n_train + n_cross)]
-            test_keys += keys[(n_train + n_cross):]
+            test_keys += keys[(n_train + n_cross):(n_train + n_cross + n_test)]
         return (train_keys, cross_keys, test_keys)
 
     def compute_mfccs(self, audio_tuples, keys, path):

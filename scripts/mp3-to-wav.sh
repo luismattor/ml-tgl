@@ -12,8 +12,8 @@
 set -e
 
 scriptdir="$(dirname $(readlink -f $0))"
-mp3dir="$scriptdir/../dataset/mp3"
-wavdir="$scriptdir/../dataset/wav"
+mp3dir="$scriptdir/../dataset/mp3/verne"
+wavdir="$scriptdir/../dataset/wav/verne"
 
 # pcm_s16le
 #   PCM         traditional wave like format (raw bytes, basically)

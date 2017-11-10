@@ -92,6 +92,11 @@ class Conf:
         self.mfcc_x_vec = int(config.get("dataset", "mfcc_x_vec").strip())
         self.langs = config.get("dataset", "langs").strip()
         self.langs = set(self.langs.split(','))
+        self.rand_seed = config.get("dataset", "rand_seed").strip()
+        if self.rand_seed:
+           self.rand_seed = int(self.rand_seed)
+        else:
+            self.rand_seed = None
 
         # Dataset folders
         self.dataset_dir = join(self.home, config.get("app","dataset_dir"))
