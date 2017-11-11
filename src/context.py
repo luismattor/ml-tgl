@@ -91,7 +91,7 @@ class Conf:
         self.id_prefix = config.get("dataset", "id_prefix").strip()
         self.mfcc_x_vec = int(config.get("dataset", "mfcc_x_vec").strip())
         self.langs = config.get("dataset", "langs").strip()
-        self.langs = set(self.langs.split(','))
+        self.langs = set([s for s in self.langs.split(',') if s])
         self.rand_seed = config.get("dataset", "rand_seed").strip()
         if self.rand_seed:
            self.rand_seed = int(self.rand_seed)

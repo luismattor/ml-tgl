@@ -46,7 +46,10 @@ class FeatureProcessing:
         # Creating tuples (label, wav_file)
         self.logger.info('creating wav index tuples')
         path = conf.raw_dir
-        chose_lang = lambda x: isdir(join(path,x)) and x in conf.langs
+        if len(conf.langs) > 0:
+            chose_lang = lambda x: isdir(join(path,x)) and x in conf.langs
+        else:
+            chose_lang = lambda x: isdir(join(path, x))
         audio_dirs = [x for x in listdir(path) if chose_lang(x)]
         audio_tuples = [ (x,join(path,x,y)) for x in audio_dirs for y in listdir(join(path, x)) ]
         self.logger.info("number of examples: " + str(len(audio_tuples)))

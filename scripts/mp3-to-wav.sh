@@ -12,8 +12,8 @@
 set -e
 
 scriptdir="$(dirname $(readlink -f $0))"
-mp3dir="$scriptdir/../dataset/mp3/verne"
-wavdir="$scriptdir/../dataset/wav/verne"
+mp3dir="$scriptdir/../dataset/mp3/topcoder-speech"
+wavdir="$scriptdir/../dataset/wav/topcoder-speech"
 
 # pcm_s16le
 #   PCM         traditional wave like format (raw bytes, basically)
@@ -21,13 +21,13 @@ wavdir="$scriptdir/../dataset/wav/verne"
 #   16          16 bits per sample
 #   le          little endian
 function convert_to_wav() {
-    mkdir -p $wavdir
-    pushd $mp3dir > /dev/null
+    mkdir -p "$wavdir"
+    pushd "$mp3dir" > /dev/null
         for dir in ./*; do
             mkdir -p "$wavdir/$dir"
-            pushd $mp3dir/$dir > /dev/null
+            pushd "$mp3dir/$dir" > /dev/null
                 for file in *.mp3; do
-                    ffmpeg -i "$file" -acodec pcm_s16le -ac 1 -ar 16000 $wavdir/$dir/"${file%.mp3}.wav";
+                    ffmpeg -i "$file" -acodec pcm_s16le -ac 1 -ar 16000 "$wavdir"/"$dir"/"${file%.mp3}.wav";
                 done
             popd > /dev/null
         done
