@@ -1,5 +1,6 @@
 import logging
 import os
+import csv
 from collections import defaultdict
 from os import listdir
 from os.path import isdir
@@ -63,29 +64,30 @@ class FeatureProcessing:
         self.logger.info('computing test features')
         test_data = self.compute_mfccs(audio_tuples, test_keys, conf.train_dir)
 
-        print "Starting PCA for train, cross and test data..."
+        if conf.pca == "True":
+            print "Starting PCA for train, cross and test data to: " + str(conf.pca_decomposition) + " elements..."
 
-        pca = decomposition.PCA(n_components = conf.pca_decomposition)
+            pca = decomposition.PCA(n_components = conf.pca_decomposition)
 
-        # Training dataset
-        train_data_list = list(train_data)
-        pca.fit(train_data_list[0])
-        train_data_list[0] = pca.transform(train_data_list[0])
-        train_data = tuple(train_data_list)
+            # Training dataset
+            train_data_list = list(train_data)
+            pca.fit(train_data_list[0])
+            train_data_list[0] = pca.transform(train_data_list[0])
+            train_data = tuple(train_data_list)
 
-        # Cross dataset
-        cross_data_list = list(cross_data)
-        pca.fit(cross_data_list[0])
-        cross_data_list[0] = pca.transform(cross_data_list[0])
-        cross_data = tuple(cross_data_list)
+            # Cross dataset
+            cross_data_list = list(cross_data)
+            pca.fit(cross_data_list[0])
+            cross_data_list[0] = pca.transform(cross_data_list[0])
+            cross_data = tuple(cross_data_list)
 
-        # Test dataset
-        test_data_list = list(test_data)
-        pca.fit(test_data_list[0])
-        test_data_list[0] = pca.transform(test_data_list[0])
-        test_data = tuple(test_data_list)
+            # Test dataset
+            test_data_list = list(test_data)
+            pca.fit(test_data_list[0])
+            test_data_list[0] = pca.transform(test_data_list[0])
+            test_data = tuple(test_data_list)
 
-        print "Finished PCA"
+            print "Finished PCA"
 
         return train_data, cross_data, test_data
         

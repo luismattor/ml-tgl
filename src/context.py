@@ -56,6 +56,7 @@ class Context:
         logger.info("*id_prefix: " + str(conf.id_prefix))
         logger.info("*batch_size: " + str(conf.batch_size))
         logger.info("rand_seed: " + str(conf.rand_seed))
+        logger.info("pca: " + str(conf.pca))
         logger.info("pca_decomposition: " + str(conf.pca_decomposition))
 
         logger.info("Session and summary parameters")
@@ -100,6 +101,7 @@ class Conf:
         else:
             self.rand_seed = None
 
+        self.pca = config.get("dataset", "pca").strip()
         self.pca_decomposition = int(config.get("dataset", "pca_decomposition").strip())
 
         # Dataset folders
